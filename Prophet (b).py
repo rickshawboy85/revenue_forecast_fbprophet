@@ -108,13 +108,7 @@ def predict(finalDT):
 def aggregate(forecast):
     forecast['date'] = forecast['ds'].dt.year.astype(str) + '-' + forecast['ds'].dt.month.astype(str) + '-01'
     forecast['date'] = pd.to_datetime(forecast['date']).dt.date
-    revenueList = []
-    for date in forecast['date'].unique():
-        revenue = forecast.loc[forecast['date'] == date, 'yhat'].sum().round(2)
-        df = pd.DataFrame({'yearMonth':date,
-                           'revenue':[revenue]})
-        revenueList.append(df)
-    revenueDF = pd.concat(revenueList)
+    revenueDF = forecast.groupby('date').sum().round(2)
     revenueDF['yearMonth'] = pd.to_datetime(revenueDF['yearMonth'])
 #    revenueDF.to_excel(path + '\\Demand_forecast\\prophet_predictions_.xlsx', index=False)
     return revenueDF
